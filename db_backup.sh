@@ -33,13 +33,13 @@ fi
 
 # environment variables or default
 
-# db settings
+# db settings (change me, or use export variable)
 DBNAME=${DBNAME:="testdb"}
 
-# 7z password
+# 7z password (change me, or use export variable)
 PASSWD=${PASSWD:="testpass"}
 
-# backblaze b2 settings
+# backblaze b2 settings (change me, or use export variable)
 BB_KEYID=${BB_KEYID:="00000"}
 BB_KEYNAME=${BB_KEYNAME:="test-backup"}
 BB_APPKEY=${BB_APPKEY:="test-key"}
@@ -51,7 +51,7 @@ b2 authorize-account ${BB_KEYID} ${BB_APPKEY}
 
 # naming files by time
 DATE=$(date +"%Y%m%d%H%M")
-SQLFILE="${DBNAME}_${DATE}.sql"
+SQLPREFIX="${DBNAME}_${DATE}"
 
 # go to work dir
 cd /backups
@@ -61,10 +61,10 @@ find /backups/* -type f -iname "*.7z" -mtime +100 -delete
 find /backups/* -type f -iname "*.uploaded" -mtime +100 -delete
 
 # dump db
-pg_dump -Fc ${DBNAME} > ${SQLFILE}
+pg_dump -Fc ${DBNAME} > ${SQLPREFIX}
 
 # compress and encrypt, then remove
-7z a -y -bd -p"${PASSWD}" ${SQLFILE}.7z ${SQLFILE} && rm ${SQLFILE}
+7z a -y -bd -p"${PASSWD}" "${SQLPREFIX}.sql.7z" "${SQLPREFIX}.sql" && rm "${SQLPREFIX}.sql"
 
 # upload any files not yet uploaded
 find * -type f -iname "*.7z" -exec [ ! -f "{}.uploaded" ] \; -exec b2 upload_file ${BB_BUCKET} "{}" "database/{}" \; -exec touch "{}.uploaded" \;
