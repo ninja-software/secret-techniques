@@ -61,7 +61,7 @@ find /backups/* -type f -iname "*.7z" -mtime +100 -delete
 find /backups/* -type f -iname "*.uploaded" -mtime +100 -delete
 
 # dump db
-pg_dump -Fc ${DBNAME} > ${SQLPREFIX}
+pg_dump -Fc ${DBNAME} > "${SQLPREFIX}.sql"
 
 # compress and encrypt, then remove
 7z a -y -bd -p"${PASSWD}" "${SQLPREFIX}.sql.7z" "${SQLPREFIX}.sql" && rm "${SQLPREFIX}.sql"
