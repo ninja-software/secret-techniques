@@ -64,7 +64,7 @@ find /backups/* -type f -iname "*.uploaded" -mtime +100 -delete
 pg_dump -Fc ${DBNAME} > "${SQLPREFIX}.sql"
 
 # compress and encrypt, then remove
-7z a -y -bd -p"${PASSWD}" "${SQLPREFIX}.sql.7z" "${SQLPREFIX}.sql" && rm "${SQLPREFIX}.sql"
+7z a -y -mx1 -mmt1 -bd -p"${PASSWD}" "${SQLPREFIX}.sql.7z" "${SQLPREFIX}.sql" && rm "${SQLPREFIX}.sql"
 
 # upload any files not yet uploaded
 find * -type f -iname "*.7z" -exec [ ! -f "{}.uploaded" ] \; -exec b2 upload_file ${BB_BUCKET} "{}" "database/{}" \; -exec touch "{}.uploaded" \;
